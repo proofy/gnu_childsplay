@@ -111,8 +111,9 @@ class GDMEscapeKeyException(Exception):
     pass
     
 class MainCoreGui:
-    def __init__(self, resolution=(800, 600), dbmaker=None, options=None, \
-                 fullscr=None, mainscr=None, error=False,session_id=None):
+    def __init__(self, resolution=(800, 600), dbmaker=None, options=None,
+                 fullscr=None, mainscr=None, error=False,session_id=None,
+                 start_splash=0, language='en'):
         """The main SP core.
         The idea is that we have a menubar and a activity area.
         The menu bar is the place for "our" gui widgets.
@@ -140,7 +141,7 @@ class MainCoreGui:
         self.theme_rc = self.cmd_options.theme_rc
         self.logger.debug("Found menu rc options %s" % self.theme_rc)
         self.theme = self.cmd_options.theme
-        language = self.cmd_options.lang
+        # language = self.cmd_options.lang
         dbase = os.path.join(HOMEDIR, self.theme, 'quizcontent.db')
         self.foreign_observers = []
         
@@ -199,7 +200,11 @@ class MainCoreGui:
         
         # Thread lock, must be used by activities to be able to block everything.
         self.lock = threading.Lock() 
-        
+
+        while start_splash + 3 > time.time():
+            time.sleep(0.1)
+
+
         # setup main screen
         if self.cmd_options.fullscreen:
             if mainscr:
@@ -280,14 +285,14 @@ class MainCoreGui:
         except utils.MyError, info:
             self.logger.error("%s" % info)
             raise utils.SPError
-        # get locale setting from dbase and reset any locales already set to the 
-        # commandline language option
-        if not self.cmd_options.lang:
-            language = self.dm._get_language()
-            self.spgoodies.localesetting = language
-        else:
-            language = (language, None)
-            self.spgoodies.localesetting = language
+        # # get locale setting from dbase and reset any locales already set to the
+        # # commandline language option
+        # if not self.cmd_options.lang:
+        #     language = self.dm._get_language()
+        #     self.spgoodies.localesetting = language
+        # else:
+        #     language = (language, None)
+        #     self.spgoodies.localesetting = language
         # get session id, needed for the stats hash
         # get user data
         user_id = self.dm.get_user_id()

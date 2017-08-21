@@ -154,9 +154,18 @@ import pygame
 pygame.mixer.pre_init(22050, -16, 2, 2048)
 pygame.init()
 
-
 # this will return the tuple (lang,rtl=bool)
 LANG = utils.set_locale(lang=CMD_Options.lang)
+
+# display a splash for 3 seconds
+start_splash = time.time()
+screen = pygame.display.set_mode((700, 200), pygame.NOFRAME)
+background = pygame.Surface(screen.get_size())
+backgroundimage = utils.load_image('lib/SPData/themes/childsplay/cp-btp-splash.png')
+background.blit(backgroundimage, (0, 0))
+screen.blit(background, (0, 0))
+pygame.display.update()
+
 
 if CMD_Options.checklog:
     try:
@@ -212,10 +221,11 @@ while not abort:
         session_id = result.ID
         session.close()
         # there's no support for other resolutions then 800x600
-        mcgui = SPMainCore.MainCoreGui(resolution=(800,600),\
-                                        options=CMD_Options, dbmaker = dbm,\
-                                        mainscr=mainscreen, error=tellcore_error, \
-                                        session_id=session_id)
+        mcgui = SPMainCore.MainCoreGui(resolution=(800, 600),
+                                        options=CMD_Options, dbmaker = dbm,
+                                        mainscr=mainscreen, error=tellcore_error,
+                                        session_id=session_id, start_splash=start_splash,
+                                       language=LANG)
         mainscreen = mcgui.get_mainscreen()
         mcgui.start()
     except SPMainCore.MainEscapeKeyException:
